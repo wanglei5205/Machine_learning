@@ -18,37 +18,32 @@ from xgboost import XGBClassifier
 from xgboost import plot_importance
 
 ### load datasets
-digits = datasets.load_digits()                  # mnist 手写数字识别（多分类任务）
+digits = datasets.load_digits()
 
 ### data analysis
-print(digits.data.shape)                         # 特征空间维度
-print(digits.target.shape)                       # 输出空间维度
+print(digits.data.shape)
+print(digits.target.shape)
 
+print(digits.target.value_counts())
 ### data split 
 x_train,x_test,y_train,y_test = train_test_split(digits.data,
                                                  digits.target,
                                                  test_size = 0.3,
                                                  random_state = 33)
+
 ### fit model for train data
 model = XGBClassifier(learning_rate=0.1,
                       n_estimators=1000,         # 树的个数--1000棵树建立xgboost
                       max_depth=6,               # 树的深度
                       min_child_weight = 1,      # 叶子节点最小权重
                       gamma=0.,                  # 惩罚项中叶子结点个数前的参数
-                      subsample=0.8,             # 随机选择80%样本建立树
-                      colsample_btree=0.8,       # 随机算哦80%样本选择特征
-                      objective='multi:softmax', # 指定损失函数
-                      scale_pos_weight=1,        # 解决样本个数不平衡的问题
+                      subsample=0.8,             # 随机选择80%样本建立决策树
+                      colsample_btree=0.8,       # 随机选择80%特征建立决策树
+                      objective='multi:softmax', # 损失函数
+                      scale_pos_weight=1,        # 解决样本个数不平衡的问题(二分类)
                       random_state=27            # 随机数
                       )
 model.fit(x_train,y_train)
-"""
-          eval_set = [(x_test,y_test)],
-          eval_metric = "mlogloss",
-          early_stopping_rounds = 10,
-          verbose = True
-          
-"""
 
 ### plot feature importance
 fig,ax = plt.subplots(figsize=(15,15))
